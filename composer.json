@@ -1,0 +1,28 @@
+{
+  "name": "hipflask",
+  "description": "WordPress Starter Kit",
+  "type": "project",
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://wpackagist.org"
+    }
+  ],
+  "config": {
+    "vendor-dir": "wp-content/vendor",
+    "preferred-install": "dist"
+  },
+  "require": {
+    "johnpbloch/wordpress": ">=3.9"
+  },
+  "require-dev": {
+  },
+  "extra": {
+    "installer-paths": {
+      "wp-content/mu-plugins/{$name}/": ["type:wordpress-muplugin"],
+      "wp-content/plugins/{$name}/": ["type:wordpress-plugin"],
+      "wp-content/themes/{$name}/": ["type:wordpress-theme"]
+    },
+    "wordpress-install-dir": "wordpress"
+  }
+}
