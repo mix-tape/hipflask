@@ -42,6 +42,8 @@ define( 'WP_SITEURL', WP_HOME . '/wordpress' );
 //   Content Directory
 // --------------------------------------------------------------------------
 
+define( 'UPLOADS', '../assets' );
+
 if ( !defined('ABSPATH') )
 	define('ABSPATH', dirname(__FILE__) . '/');
 
