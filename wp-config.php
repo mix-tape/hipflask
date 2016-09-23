@@ -49,6 +49,13 @@ define( 'WP_CONTENT_DIR', ABSPATH . '../wp-content');
 define( 'WP_CONTENT_URL', WP_HOME . '/wp-content');
 
 
+// --------------------------------------------------------------------------
+//   Disable plugin and theme updates
+// --------------------------------------------------------------------------
+
+define('DISALLOW_FILE_MODS', true);
+
+
 /** Database Charset to use in creating database tables. */
 define('DB_CHARSET', 'utf8');
 
