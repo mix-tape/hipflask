@@ -1,0 +1,33 @@
+// --------------------------------------------------------------------------
+//
+//  Sections
+//
+// --------------------------------------------------------------------------
+
+@mixin center {
+  @include outer-container;
+
+  @include media($desktop-down) {
+    width: $desktop;
+  }
+
+  @include media($tablet-down) {
+    width: $tablet;
+  }
+
+  @include media($mobile-down) {
+    max-width: $mobile;
+    width: auto;
+  }
+}
+
+
+.wrapper {
+  display: block;
+  position: relative;
+  padding: $gap * 2 $gap;
+}
+
+  .container {
+    @include center;
+  }

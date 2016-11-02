@@ -1,0 +1,37 @@
+// --------------------------------------------------------------------------
+//
+//  Images
+//
+// --------------------------------------------------------------------------
+
+img,
+.size-auto,
+.size-full,
+.size-large,
+.size-medium,
+.size-thumbnail {
+  height: auto;
+  max-width: 100%;
+}
+
+.alignleft {
+  clear: left;
+  float: left;
+  margin-right: $gap;
+}
+
+.alignright {
+  clear: right;
+  float: right;
+  margin-left: $gap;
+}
+
+.aligncenter {
+  display: block;
+  margin: 0 auto $gap;
+}
+
+.alignnone {
+  display: block;
+  margin: 0 0 $gap;
+}

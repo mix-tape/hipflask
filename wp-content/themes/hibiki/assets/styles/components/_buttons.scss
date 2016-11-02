@@ -1,0 +1,44 @@
+// --------------------------------------------------------------------------
+//
+//  Buttons
+//
+// --------------------------------------------------------------------------
+
+@mixin button ($colour1: $base-link-color) {
+  display: inline-block;
+  padding: 0.5em 1em;
+  background-color: $colour1;
+  border: 1px solid $colour1;
+  border-radius: $base-border-radius;
+  outline: 0;
+  zoom: 1;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-drag: none;
+
+  color: $white;
+  white-space: nowrap;
+  vertical-align: baseline;
+  text-decoration: none;
+  text-align: center;
+  line-height: normal;
+
+  &:hover {
+    outline: 0;
+    background: lighten($colour1, 20%);
+    border-color: lighten($colour1, 20%);
+  }
+
+  &:active,
+  &.active {
+    outline: 0;
+  }
+
+  &.disabled,
+  &[disabled] {
+    background-image: none;
+    opacity: 0.4;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+}

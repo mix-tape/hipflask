@@ -13,7 +13,11 @@
     "preferred-install": "dist"
   },
   "require": {
-    "johnpbloch/wordpress": ">=3.9"
+    "johnpbloch/wordpress": ">=3.9",
+    "micc83/acf-fonticonpicker": "dev-master",
+    "wpackagist-plugin/tiny-compress-images": "*",
+    "wpackagist-plugin/quick-pagepost-redirect-plugin": "*",
+    "wpackagist-plugin/wordpress-seo": "*"
   },
   "require-dev": {
   },
