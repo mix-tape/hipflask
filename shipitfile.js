@@ -1,4 +1,15 @@
+// --------------------------------------------------------------------------
+//
+//   Shipit
+//     Handles initialisation, deployment, data and assets
+//
+// --------------------------------------------------------------------------
+
 module.exports = function (shipit) {
+
+  // --------------------------------------------------------------------------
+  //   Dependencies and shipit extensions
+  // --------------------------------------------------------------------------
 
   require('shipit-deploy')(shipit);
   require('shipit-db')(shipit);
@@ -6,9 +17,23 @@ module.exports = function (shipit) {
   require('shipit-assets')(shipit);
   var path = require('path2/posix');
 
+
+  // --------------------------------------------------------------------------
+  //   Get project data from secrets, see secrets.json.example
+  // --------------------------------------------------------------------------
+
   var config = require('./secrets.json');
 
+
+  // --------------------------------------------------------------------------
+  //   Configure shipit
+  // --------------------------------------------------------------------------
+
   shipit.initConfig({
+
+    // --------------------------------------------------------------------------
+    //   Defaults
+    // --------------------------------------------------------------------------
 
     default: {
       workspace: '/tmp/shipit/workspace',
@@ -34,6 +59,7 @@ module.exports = function (shipit) {
 
       shared: {
         overwrite: true,
+
         dirs: [
           'assets',
           {
@@ -42,12 +68,13 @@ module.exports = function (shipit) {
             chmod: '-R 755',
           }
         ],
+
         files: [
           'secrets.json',
           {
             path: 'secrets.json',
             overwrite: false,
-            chmod: '755',
+            chmod: '750',
           }
         ],
       },
@@ -59,10 +86,16 @@ module.exports = function (shipit) {
       },
     },
 
+
+    // --------------------------------------------------------------------------
+    //   Staging
+    // --------------------------------------------------------------------------
+
     staging: {
       servers: config.staging.ssh_user + '@' + config.staging.ssh_host,
       deployTo: config.staging.deploy_path,
-      branch: 'test',
+      branch: 'test', // TEMP for testing
+
       db: {
         remote: {
           host     : config.staging.db_host,
@@ -75,18 +108,33 @@ module.exports = function (shipit) {
 
   });
 
+  // --------------------------------------------------------------------------
+  //
+  //   Tasks
+  //
+  // --------------------------------------------------------------------------
+
+  // --------------------------------------------------------------------------
+  //   Default, runs on shipit deploy <environment>
+  // --------------------------------------------------------------------------
+
   shipit.on('fetched', function () {
     shipit.start('build');
     shipit.start('composer');
   });
 
   shipit.blTask('build', function () {
-    return shipit.local('cd ' + path.join(shipit.config.workspace, 'wp-content/themes', config.theme) + ' && yarn install && bower install && gulp build');
+    return shipit.local('cd ' + path.join(shipit.config.workspace, 'wp-content/themes', config.project) + ' && yarn install && bower install && gulp build');
   });
 
   shipit.blTask('composer', function () {
     return shipit.local('cd ' + shipit.config.workspace + ' && php /usr/local/bin/composer.phar install');
   });
+
+
+  // --------------------------------------------------------------------------
+  //   Copy secrets.json to the server when shared directories are created
+  // --------------------------------------------------------------------------
 
   shipit.on('sharedDirsCreated', function () {
     shipit.start('secrets');

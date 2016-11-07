@@ -22,9 +22,9 @@
 $json_file = file_get_contents(dirname(__FILE__) . '/secrets.json');
 $secrets = json_decode( $json_file );
 define('ENVIRONMENT', getenv('ENVIRONMENT'));
-$environment = (ENVIRONMENT ? ENVIRONMENT : 'local');
+$environment = (ENVIRONMENT ? ENVIRONMENT : 'development');
 
-define('DB_NAME', $secrets->$environment->db);
+define('DB_NAME', $secrets->$environment->db_name);
 define('DB_USER', $secrets->$environment->db_user);
 define('DB_PASSWORD', $secrets->$environment->db_password);
 define('DB_HOST', $secrets->$environment->db_host);
