@@ -115,6 +115,15 @@ module.exports = function (shipit) {
   // --------------------------------------------------------------------------
 
   // --------------------------------------------------------------------------
+  //   Provision remote server
+  // --------------------------------------------------------------------------
+
+  shipit.blTask('provision', function () {
+    return shipit.remote('mysql -u' + shipit.config.db.remote.username + ' -p' + shipit.config.db.remote.password + ' -e "CREATE DATABASE IF NOT EXISTS ' + shipit.config.db.remote.database + '"');
+  });
+
+
+  // --------------------------------------------------------------------------
   //   Default, runs on shipit deploy <environment>
   // --------------------------------------------------------------------------
 
