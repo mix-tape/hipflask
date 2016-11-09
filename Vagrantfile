@@ -6,7 +6,7 @@ require 'json'
 Vagrant.configure("2") do |config|
 
     # Load Secrets.json
-    secretsFile = File.read('secrets.json')
+    secretsFile = File.read( File.join( __dir__, 'secrets.json' ))
     secrets = JSON.parse(secretsFile)
 
     # Box to load
