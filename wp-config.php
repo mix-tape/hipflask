@@ -19,10 +19,24 @@
 //   Check secrets.json for database details for the current enironment
 // --------------------------------------------------------------------------
 
-$json_file = file_get_contents(dirname(__FILE__) . '/secrets.json');
-$secrets = json_decode( $json_file );
 define('ENVIRONMENT', getenv('ENVIRONMENT'));
 $environment = (ENVIRONMENT ? ENVIRONMENT : 'development');
+
+switch ($environment) {
+
+	case 'development':
+		$json_file_location = dirname(__FILE__) . '/secrets.json'
+		break;
+
+	// Obscure secrets on environments other than development
+
+	default:
+		$json_file_location = dirname(__FILE__) . '/../../shared/secrets.json';
+		break;
+}
+
+$json_file = file_get_contents($json_file_location);
+$secrets = json_decode( $json_file );
 
 define('DB_NAME', $secrets->$environment->db_name);
 define('DB_USER', $secrets->$environment->db_user);

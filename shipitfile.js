@@ -68,15 +68,6 @@ module.exports = function (shipit) {
             chmod: '-R 755',
           }
         ],
-
-        files: [
-          'secrets.json',
-          {
-            path: 'secrets.json',
-            overwrite: false,
-            chmod: '750',
-          }
-        ],
       },
 
       assets: {
@@ -94,7 +85,6 @@ module.exports = function (shipit) {
     staging: {
       servers: config.staging.ssh_user + '@' + config.staging.ssh_host,
       deployTo: config.staging.deploy_path,
-      branch: 'test', // TEMP for testing
 
       db: {
         remote: {
