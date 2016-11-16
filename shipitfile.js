@@ -140,7 +140,7 @@ module.exports = function (shipit) {
   });
 
   shipit.blTask('secrets', function () {
-    return shipit.remoteCopy('./secrets.json', path.join(shipit.config.deployTo, 'shared'));
+    return shipit.remoteCopy(__dirname + '/secrets.json', path.join(shipit.config.deployTo, 'shared'));
   });
 
 };
