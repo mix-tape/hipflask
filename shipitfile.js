@@ -58,7 +58,6 @@ module.exports = function (shipit) {
       },
 
       shared: {
-        overwrite: true,
 
         dirs: [
           'assets',
