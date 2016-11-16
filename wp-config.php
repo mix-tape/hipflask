@@ -25,7 +25,7 @@ $environment = (ENVIRONMENT ? ENVIRONMENT : 'development');
 switch ($environment) {
 
 	case 'development':
-		$json_file_location = dirname(__FILE__) . '/secrets.json'
+		$json_file_location = dirname(__FILE__) . '/secrets.json';
 		break;
 
 	// Obscure secrets on environments other than development
