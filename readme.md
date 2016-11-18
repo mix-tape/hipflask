@@ -12,14 +12,30 @@ Based on the [Scotch Box](https://box.scotch.io/)
 
 * Download and Install [Vagrant](https://www.vagrantup.com/downloads.html)
 * Download and Install [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
-* Install the Vagrant hosts manager `vagrant plugin install vagrant-hostmanager`
+* Install Vagrant hostmanager `vagrant plugin install vagrant-hostmanager`
+* Install Vagrant triggers `vagrant plugin install vagrant-triggers`
+
+* [Composer](https://getcomposer.org/)
+* [NodeJS](https://nodejs.org/en/)
+* [MySQL Workbench](https://dev.mysql.com/downloads/workbench/)
+* Make mysqldump available to your shell `ln -s /Applications/MySQLWorkbench.app/Contents/Resources/mysqldump /usr/bin/mysqldump`
+* [shipit](https://github.com/shipitjs/shipit)
 
 ## Installation
+
+### Starting the server
 
 In your project root:
 
 * Clone the main project into the `public` directory
-* Run ``` vagrant up ```
+* Run `vagrant up`
+
+### Installing dependencies
+
+Dependencies are handled with `composer` and `npm`
+
+* `composer install`
+* `npm install`
 
 
 ## Basic Vagrant Commands
@@ -54,7 +70,7 @@ vagrant ssh
 
 ## SSH Access
 
-- Hostname: 127.0.0.1:2222
+- Hostname: `127.0.0.1:2222`
 - Username: vagrant
 - Password: vagrant
 
