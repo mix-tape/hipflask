@@ -15,10 +15,11 @@ module.exports = function (shipit) {
   require('shipit-db')(shipit);
   require('shipit-shared')(shipit);
   require('shipit-assets')(shipit);
-  var path = require('path2/posix');
-  var friendlyUrl = require('friendly-url');
-  var inquirer = require('inquirer');
 
+  var path = require('path2/posix'),
+      friendlyUrl = require('friendly-url'),
+      inquirer = require('inquirer'),
+      replaceInFile = require('replace-in-file');
 
   // --------------------------------------------------------------------------
   //   Get project data from secrets, see secrets.json.example
@@ -128,7 +129,7 @@ module.exports = function (shipit) {
       type:    'confirm',
       name:    'initConfirm',
       default: false,
-      message: 'Here be dragons! Only run this once on each project. This will download the theme and replace / rename several files and directories. Are you sure?'
+      message: 'Here be dragons! Only run this once on each project. This will initialise git download the theme and replace / rename several files and directories. Are you sure?'
     })
     .then( function (answer) {
 
@@ -139,27 +140,45 @@ module.exports = function (shipit) {
         {
           type:    'input',
           name:    'projectName',
-          message: 'What\'s your project name (url safe)'
+          message: 'What\'s the project name?'
         },
       ])
       .then(function (answers) {
 
-        projectName = friendlyUrl(answers.projectName);
+        projectName = answers.projectName;
+        projectSlug = friendlyUrl(projectName);
 
-        // Clone theme repo and remove .git
 
-        shipit.local('git clone git@github.com:birdbrain/hibiki_new.git ' + projectName, { cwd: __dirname + '/wp-content/themes' }).then(function (res) {
+        // Replace Hipflask references
 
-          shipit.local('rm -rf .git', { cwd: __dirname + '/wp-content/themes/' + projectName })
-
-          // shipit.local('curl -H "Authorization: token ' + config.github_token + '" https://api.github.com/orgs/birdbrain/repos -d \'{ "name":"' + projectName + '","description":""\'}').then(function () {
-          shipit.local('curl -H "Authorization: token ' + config.github_token + '" https://api.github.com/orgs/mix-tape/repos -d \'{ "name":"' + projectName + '","description":""\'}').then(function () {
-
-            shipit.local('git add -A && git commit -m "Initial Commit"')
-          })
-
+        replaceInFile({
+          files: [
+            'readme.md',
+          ],
+          replace: 'Hipflask',
+          with: projectName
         })
 
+
+        // Clone theme repo
+
+        shipit.local('git clone git@github.com:birdbrain/hibiki_new.git ' + projectSlug, { cwd: __dirname + '/wp-content/themes' }).then(function (res) {
+
+          // Remove .git
+
+          shipit.local('rm -rf .git', { cwd: __dirname } )
+          shipit.local('rm -rf .git', { cwd: __dirname + '/wp-content/themes/' + projectSlug })
+
+          // Create a github repo, push initial commit
+
+          shipit.local('curl -H "Authorization: token ' + config.github_token + '" https://api.github.com/orgs/mix-tape/repos -d \'{ "name":"' + projectSlug + '","description":"' + projectName + '"\'}').then(function (res) {
+
+            remoteUrl = JSON.parse(res.stdout).ssh_url;
+
+            shipit.local('git init && git remote add origin ' + remoteUrl + ' && git add -A && git commit -m "Initial Commit" && git push origin master:master', { cwd: __dirname })
+
+          })
+        })
       })
     })
   });
