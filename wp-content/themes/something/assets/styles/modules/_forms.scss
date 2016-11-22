@@ -1,0 +1,81 @@
+// --------------------------------------------------------------------------
+//
+//  Forms
+//    Form elements, plugin styling
+//
+// --------------------------------------------------------------------------
+
+
+// --------------------------------------------------------------------------
+//   Variables
+// --------------------------------------------------------------------------
+
+$form-element-border: 1px solid $base-border-color;
+
+
+// --------------------------------------------------------------------------
+//   Generic form elements
+// --------------------------------------------------------------------------
+
+form {
+
+  // ----- Remove default styling ----- //
+
+  ul,
+  ol,
+  li {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  label {
+    font-weight: 600;
+  }
+}
+
+// ----- Buttons ----- //
+
+.button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
+  @include button;
+}
+
+// ----- Input types ----- //
+
+#{$all-text-inputs},
+textarea,
+select {
+  max-width: 100%;
+  width: 100%;
+  border: $form-element-border;
+  padding: 5px 10px;
+  font-weight: normal;
+}
+
+#{$all-text-inputs-hover},
+textarea,
+select {
+  background: $white;
+}
+
+#{$all-text-inputs-focus},
+textarea,
+select {
+  background: $white;
+}
+
+textarea.medium {
+  height: 100px;
+}
+
+textarea.large {
+  height: 150px;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  margin-right: 10px;
+}

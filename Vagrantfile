@@ -30,7 +30,7 @@ Vagrant.configure("2") do |config|
     if Vagrant.has_plugin? 'vagrant-triggers'
         config.trigger.before :halt, :stdout => true, :force => true do
             info "Exporting DB"
-            run "vagrant ssh -c 'cd /var/www/public && wp db export'"
+            run "vagrant ssh -c 'cd /var/www/public && wp db export db/" + Time.now.strftime("%d%m%Y-%H:%M:%S") + ".sql'";
         end
     else
         puts 'vagrant-triggers missing, please install the plugin:'

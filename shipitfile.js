@@ -16,6 +16,8 @@ module.exports = function (shipit) {
   require('shipit-shared')(shipit);
   require('shipit-assets')(shipit);
   var path = require('path2/posix');
+  var friendlyUrl = require('friendly-url');
+  var inquirer = require('inquirer');
 
 
   // --------------------------------------------------------------------------
@@ -36,12 +38,12 @@ module.exports = function (shipit) {
     // --------------------------------------------------------------------------
 
     default: {
-      workspace: '/tmp/shipit/workspace',
-      repositoryUrl: config.repository,
-      ignores: ['.git', 'node_modules', 'wp-content/vendor'],
-      keepReleases: 2,
+      workspace:        '/tmp/shipit/workspace',
+      repositoryUrl:    config.repository,
+      ignores:          ['.git', 'node_modules', 'wp-content/vendor'],
+      keepReleases:     2,
       deleteOnRollback: false,
-      shallowClone: true,
+      shallowClone:     true,
 
       db: {
         local: {
@@ -62,9 +64,9 @@ module.exports = function (shipit) {
         dirs: [
           'assets',
           {
-            path: 'assets',
+            path:      'assets',
             overwrite: false,
-            chmod: '-R 755',
+            chmod:     '-R 755',
           }
         ],
       },
@@ -76,14 +78,23 @@ module.exports = function (shipit) {
       },
     },
 
+    // --------------------------------------------------------------------------
+    //   Local
+    // --------------------------------------------------------------------------
+
+    local: {
+      servers: 'localhost'
+    },
+
 
     // --------------------------------------------------------------------------
     //   Staging
     // --------------------------------------------------------------------------
 
     staging: {
-      servers: config.staging.ssh_user + '@' + config.staging.ssh_host,
+      servers:  config.staging.ssh_user + '@' + config.staging.ssh_host,
       deployTo: config.staging.deploy_path,
+      branch:   'test', // TEMP for testing, don't commit
 
       db: {
         remote: {
@@ -102,6 +113,56 @@ module.exports = function (shipit) {
   //   Tasks
   //
   // --------------------------------------------------------------------------
+
+  // --------------------------------------------------------------------------
+  //   Initialise Project
+  // --------------------------------------------------------------------------
+
+  shipit.blTask('init', function (callback) {
+
+    // --------------------------------------------------------------------------
+    //   Confirm Intention
+    // --------------------------------------------------------------------------
+
+    inquirer.prompt({
+      type:    'confirm',
+      name:    'initConfirm',
+      default: false,
+      message: 'Here be dragons! Only run this once on each project. This will download the theme and replace / rename several files and directories. Are you sure?'
+    })
+    .then( function (answer) {
+
+      if (!answer.initConfirm)
+        return callback();
+
+      inquirer.prompt([
+        {
+          type:    'input',
+          name:    'projectName',
+          message: 'What\'s your project name (url safe)'
+        },
+      ])
+      .then(function (answers) {
+
+        projectName = friendlyUrl(answers.projectName);
+
+        // Clone theme repo and remove .git
+
+        shipit.local('git clone git@github.com:birdbrain/hibiki_new.git ' + projectName, { cwd: __dirname + '/wp-content/themes' }).then(function (res) {
+
+          shipit.local('rm -rf .git', { cwd: __dirname + '/wp-content/themes/' + projectName })
+
+          // shipit.local('curl -H "Authorization: token ' + config.github_token + '" https://api.github.com/orgs/birdbrain/repos -d \'{ "name":"' + projectName + '","description":""\'}').then(function () {
+          shipit.local('curl -H "Authorization: token ' + config.github_token + '" https://api.github.com/orgs/mix-tape/repos -d \'{ "name":"' + projectName + '","description":""\'}').then(function () {
+
+            shipit.local('git add -A && git commit -m "Initial Commit"')
+          })
+
+        })
+
+      })
+    })
+  });
 
   // --------------------------------------------------------------------------
   //   Provision remote server

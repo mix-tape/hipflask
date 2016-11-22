@@ -1,0 +1,32 @@
+// --------------------------------------------------------------------------
+//
+//   Variables
+//
+// --------------------------------------------------------------------------
+
+
+// ----- Colours ----- //
+
+$black:               #000000;
+$charcoal:            #6f6f6f;
+$dark-gray:           #bebebe;
+$gray:                #dadada;
+$light-gray:          #fefefe;
+$white:               #ffffff;
+
+$blue:                #74a9cf;
+$green:               #9c9c48;
+$yellow:              #ffd700;
+$red:                 #d78f8e;
+
+
+// ----- Typography ----- //
+
+$base-body-color:     $charcoal;
+$base-heading-color:  $black;
+
+$base-link-color:     $blue;
+$base-link-hover:     lighten($base-link-color, 20%);
+
+$base-border-color:   $gray;
+$base-border-radius:  2px;

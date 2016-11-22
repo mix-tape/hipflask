@@ -17,11 +17,22 @@ Based on the [Scotch Box](https://box.scotch.io/)
 
 * [Composer](https://getcomposer.org/)
 * [NodeJS](https://nodejs.org/en/)
-* [MySQL Workbench](https://dev.mysql.com/downloads/workbench/)
-* Make mysqldump available to your shell `ln -s /Applications/MySQLWorkbench.app/Contents/Resources/mysqldump /usr/bin/mysqldump`
 * [shipit](https://github.com/shipitjs/shipit)
 
+### Make mysqldump available to your shell
+
+If required make mysqldump available to your shell (run `which mysqldump` to test if needed).
+
+* [MySQL Workbench](https://dev.mysql.com/downloads/workbench/)
+* `ln -s /Applications/MySQLWorkbench.app/Contents/Resources/mysqldump /usr/bin/mysqldump`
+
 ## Installation
+
+### Secrets
+
+Copy a new secrets.json from the example file, fill in the generic details and staging and production server details
+
+`mv secrets.json.example secrets.json`
 
 ### Starting the server
 

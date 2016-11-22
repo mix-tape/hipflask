@@ -1,0 +1,17 @@
+{
+  "name": "hibiki",
+  "version": "4.0.0",
+  "private": true,
+  "dependencies": {
+    "jquery": "1.12.2",
+    "jquery-easing-original": "",
+    "jquery-hoverIntent": "",
+    "mediaCheck": "",
+    "matchHeight": "",
+    "neat": "^1.8.0",
+    "normalize-scss": "^3.0.3"
+  },
+  "resolutions": {
+    "jquery": "1.12.2"
+  }
+}
