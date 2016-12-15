@@ -5,16 +5,16 @@
 //
 // --------------------------------------------------------------------------
 
-module.exports = function (shipit) {
+module.exports = (shipit) => {
 
   // --------------------------------------------------------------------------
   //   Dependencies and shipit extensions
   // --------------------------------------------------------------------------
 
-  require('shipit-deploy')(shipit);
-  require('shipit-db')(shipit);
-  require('shipit-shared')(shipit);
-  require('shipit-assets')(shipit);
+  require('shipit-deploy')(shipit)
+  require('shipit-db')(shipit)
+  require('shipit-shared')(shipit)
+  require('shipit-assets')(shipit)
 
   var path = require('path2/posix'),
       friendlyUrl = require('friendly-url'),
@@ -25,7 +25,7 @@ module.exports = function (shipit) {
   //   Get project data from secrets, see secrets.json.example
   // --------------------------------------------------------------------------
 
-  var config = require('./secrets.json');
+  var config = require('./secrets.json')
 
 
   // --------------------------------------------------------------------------
@@ -107,7 +107,8 @@ module.exports = function (shipit) {
       }
     }
 
-  });
+  })
+
 
   // --------------------------------------------------------------------------
   //
@@ -119,7 +120,7 @@ module.exports = function (shipit) {
   //   Initialise Project
   // --------------------------------------------------------------------------
 
-  shipit.blTask('init', function (callback) {
+  shipit.blTask('init', (callback) => {
 
     // --------------------------------------------------------------------------
     //   Confirm Intention
@@ -187,39 +188,39 @@ module.exports = function (shipit) {
   //   Provision remote server
   // --------------------------------------------------------------------------
 
-  shipit.blTask('provision', function () {
-    return shipit.remote('mysql -u' + shipit.config.db.remote.username + ' -p' + shipit.config.db.remote.password + ' -e "CREATE DATABASE IF NOT EXISTS ' + shipit.config.db.remote.database + '"');
-  });
+  shipit.blTask('provision', () => {
+    return shipit.remote(`mysql -u${shipit.config.db.remote.username} -p${shipit.config.db.remote.password} -e "CREATE DATABASE IF NOT EXISTS ${shipit.config.db.remote.database}"`)
+  })
 
 
   // --------------------------------------------------------------------------
   //   Default, runs on shipit deploy <environment>
   // --------------------------------------------------------------------------
 
-  shipit.on('fetched', function () {
-    shipit.start('build');
-    shipit.start('composer');
-  });
+  shipit.on('fetched', () => {
+    shipit.start('build')
+    shipit.start('composer')
+  })
 
-  shipit.blTask('build', function () {
-    return shipit.local('cd ' + path.join(shipit.config.workspace, 'wp-content/themes', config.project) + ' && yarn install && bower install && gulp build');
-  });
+  shipit.blTask('build', () => {
+    return shipit.local(`cd ${path.join(shipit.config.workspace, 'wp-content/themes', config.project)} && yarn install && bower install && gulp build`)
+  })
 
-  shipit.blTask('composer', function () {
-    return shipit.local('cd ' + shipit.config.workspace + ' && php /usr/local/bin/composer.phar install');
-  });
+  shipit.blTask('composer', () => {
+    return shipit.local(`cd ${shipit.config.workspace} && composer install`)
+  })
 
 
   // --------------------------------------------------------------------------
   //   Copy secrets.json to the server when shared directories are created
   // --------------------------------------------------------------------------
 
-  shipit.on('sharedDirsCreated', function () {
-    shipit.start('secrets');
-  });
+  shipit.on('sharedDirsCreated', () => {
+    shipit.start('secrets')
+  })
 
-  shipit.blTask('secrets', function () {
-    return shipit.remoteCopy(__dirname + '/secrets.json', path.join(shipit.config.deployTo, 'shared'));
-  });
+  shipit.blTask('secrets', () => {
+    return shipit.remoteCopy(path.join(__dirname, 'secrets.json'), path.join(shipit.config.deployTo, 'shared'))
+  })
 
-};
+}
