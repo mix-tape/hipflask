@@ -13,7 +13,7 @@ Vagrant.configure("2") do |config|
     config.vm.box = "scotch/box"
 
     # Networking
-    config.vm.network "private_network", ip: "192.168.33.10", type: "dhcp", auto_config: true
+    config.vm.network "private_network", ip: "192.168.33.10"
     config.vm.network :forwarded_port, guest: 3306, host: 3306
     config.vm.hostname = "scotchbox"
 
