@@ -5,6 +5,8 @@
 //
 // --------------------------------------------------------------------------
 
+const log = console.log
+
 module.exports = (shipit) => {
 
   // --------------------------------------------------------------------------
@@ -19,9 +21,11 @@ module.exports = (shipit) => {
   var path = require('path2/posix'),
       fs = require('fs'),
       friendlyUrl = require('friendly-url'),
+      chalk = require('chalk'),
       inquirer = require('inquirer'),
-      replaceInFile = require('replace-in-file')
-      GitHub = require('github-api')
+      replaceInFile = require('replace-in-file'),
+      GitHub = require('github-api'),
+      Promise = require("bluebird")
 
 
   // --------------------------------------------------------------------------
@@ -32,11 +36,19 @@ module.exports = (shipit) => {
 
 
   // --------------------------------------------------------------------------
+  //   Set repository
+  // --------------------------------------------------------------------------
+
+  if (!config.repository)
+    config.repository = `https://github.com/${config.organisation}/${config.project}`
+
+
+  // --------------------------------------------------------------------------
   //   Github API Authentication
   // --------------------------------------------------------------------------
 
   if ('CHANGE_ME' == config.github_token)
-    return console.log("Please add your github token to secrets.json")
+    return log(chalk.bold.red('Please add your github token to secrets.json'))
 
   var gh = new GitHub({
     token: config.github_token
@@ -61,15 +73,6 @@ module.exports = (shipit) => {
       deleteOnRollback: false,
       shallowClone:     true,
 
-      db: {
-        local: {
-          host     : config.development.url,
-          username : config.development.db_user,
-          password : config.development.db_password,
-          database : config.development.db_name,
-        },
-      },
-
       composer: {
         remote: false,
         installFlags: ['--no-dev']
@@ -81,7 +84,7 @@ module.exports = (shipit) => {
           'assets',
           {
             path:      'assets',
-            overwrite: false,
+            overwrite: true,
             chmod:     '-R 755',
           }
         ],
@@ -112,6 +115,12 @@ module.exports = (shipit) => {
       deployTo: config.staging.deploy_path,
 
       db: {
+        local: {
+          host     : config.development.db_host,
+          username : config.development.db_user,
+          password : config.development.db_password,
+          database : config.development.db_name,
+        },
         remote: {
           host     : config.staging.db_host,
           username : config.staging.db_user,
@@ -131,6 +140,25 @@ module.exports = (shipit) => {
   // --------------------------------------------------------------------------
 
   // --------------------------------------------------------------------------
+  //   Process Order
+  // --------------------------------------------------------------------------
+
+  shipit.on('init:confirmed', () => {
+    shipit.start('init:replace')
+    shipit.start('init:repository')
+  })
+
+  shipit.on('init:repository-created', () => {
+    shipit.start('init:theme')
+  })
+
+  shipit.on('init:theme-cloned', () => {
+    shipit.start('init:provision')
+    shipit.start('init:commit')
+  })
+
+
+  // --------------------------------------------------------------------------
   //   Initialise Project
   // --------------------------------------------------------------------------
 
@@ -138,113 +166,121 @@ module.exports = (shipit) => {
 
     // Confirm Intention
 
+    log(chalk.green(`Project Name: `), chalk.blue(config.project))
+    log(chalk.green(`Project Organisation: `), chalk.blue(config.organisation))
+    log(chalk.green(`Starter Theme: `), chalk.blue(config.starter_theme))
+
     inquirer.prompt({
       type:    'confirm',
       name:    'initConfirm',
       default: false,
-      message: 'Here be dragons! Only run this once on each project. This will initialise git, download the theme and replace / rename several files and directories. Are you sure?'
+      message: 'Here be dragons! Only run this once on each project. This will initialise git, download the theme and replace / rename several files and directories. Check the details above and confirm?'
     })
     .then( (answer) => {
 
       if (!answer.initConfirm)
         return callback()
 
-      // Request Project Name
+      shipit.emit('init:confirmed')
+      return callback()
 
-      inquirer.prompt([
-        {
-          type:    'input',
-          name:    'projectName',
-          message: `What's the project name?`
-        },
-      ])
-      .then( (answers) => {
-
-        var projectName = answers.projectName,
-            projectSlug = friendlyUrl(projectName)
-
-        // Update secrets with project name
-
-        config.project = projectSlug
-        fs.writeFileSync("./secrets.json", JSON.stringify(config, null, 2))
-
-        // Replace Hipflask references
-
-        replaceInFile({
-          files: [
-            'readme.md',
-          ],
-          replace: 'Hipflask',
-          with: projectName
-        })
-
-        // Create a github repo, push initial commit
-
-        var ghOrganisation = gh.getOrganization(config.organisation)
-
-        ghOrganisation.createRepo({
-          name: projectSlug,
-          has_wiki: false,
-          has_downloads: false,
-          auto_init: false
-        }, (error, response) => {
-
-          if (error) {
-
-            console.log('Warning')
-            console.log(error.response.data.message)
-
-            repo = gh.getRepo(config.organisation, projectSlug)
-            repo.getDetails((error, response) => {
-
-              if (error)
-                callback('Error retrieving repo detail')
-
-              remoteUrl = response.ssh_url
-
-              cloneTheme(remoteUrl)
-
-            })
-
-          } else {
-
-            console.log('Successfully created repo')
-
-            remoteUrl = response.ssh_url
-
-            cloneTheme(remoteUrl)
-          }
-        })
-
-
-        // Clone theme repo
-
-        function cloneTheme(remoteUrl) {
-
-          // Update secrets with repo url
-
-          config.repository = remoteUrl
-          fs.writeFileSync("./secrets.json", JSON.stringify(config, null, 2))
-
-          if (fs.existsSync(`${__dirname}/wp-content/themes/${projectSlug}`))
-            return callback("A theme with your project name already exists")
-
-          shipit.local(`git clone ${config.starter_theme} ${projectSlug}`, { cwd: `${__dirname}/wp-content/themes` }).then( (res) => {
-
-            // Remove theme git repo
-
-            shipit.local('rm -rf .git', { cwd: path.join(__dirname, `/wp-content/themes/${projectSlug}`) })
-            shipit.local('rm -rf .git', { cwd: __dirname } ).then( () => {
-
-              // Initial commit
-
-              shipit.local(`git init && git remote add origin ${remoteUrl} && git add -A && git commit -m "Initial Commit" && git push origin master:master`, { cwd: __dirname }).then(callback())
-
-            })
-          })
-        }
-      })
     })
+  })
+
+  // --------------------------------------------------------------------------
+  //   Replace Hipflask References
+  // --------------------------------------------------------------------------
+
+  shipit.task('init:replace', (callback) => {
+
+    replaceInFile({
+      files: [
+        'readme.md',
+      ],
+      replace: 'Hipflask',
+      with: config.project
+    })
+    .then(replaceInFile({
+      files: [
+        'readme.md',
+        'package.json',
+        path.join('wp-content/themes', config.project, '*.json'),
+      ],
+      replace: 'hipflask',
+      with: config.project
+    }))
+    .then(changedFiles => {
+      log(chalk.green('Modified files:', changedFiles.join(', ')))
+      return callback()
+    })
+
+  })
+
+
+  // --------------------------------------------------------------------------
+  //   Create Repository
+  // --------------------------------------------------------------------------
+
+  shipit.blTask('init:repository', (callback) => {
+
+    const ghOrganisation = gh.getOrganization(config.organisation)
+
+    ghOrganisation.createRepo({
+      name: config.project,
+      has_wiki: false,
+      has_downloads: false,
+      auto_init: false
+    },
+    (error, response) => {
+
+      if (error) {
+
+        log(chalk.bold.red('Something went wrong. Likely the repo already exists, rename your project to continue'))
+        callback(error)
+
+      } else {
+
+        log(chalk.green('Successfully created repo'))
+
+        config.repository = response.ssh_url
+
+        shipit.emit('init:repository-created')
+        callback()
+      }
+    })
+  })
+
+
+  // --------------------------------------------------------------------------
+  //   Clone Theme
+  // --------------------------------------------------------------------------
+
+  shipit.blTask('init:theme', (callback) => {
+
+    if (fs.existsSync(`${__dirname}/wp-content/themes/${config.project}`)) {
+      log(chalk.bold.red(`A theme with your project name: ${config.project} already exists`))
+      shipit.emit('init:theme-cloned')
+      return callback()
+    }
+
+    shipit.local(`git clone ${config.starter_theme} ${config.project}`, { cwd: `${__dirname}/wp-content/themes` }).then( () => {
+      shipit.emit('init:theme-cloned')
+      callback()
+    })
+
+  })
+
+
+  // --------------------------------------------------------------------------
+  //   Initial Commit
+  // --------------------------------------------------------------------------
+
+  shipit.blTask('init:commit', (callback) => {
+
+    shipit.local('rm -rf .git/', { cwd: path.join(__dirname, `/wp-content/themes/${config.project}`) })
+    .then(shipit.local(`rm -rf .git && git init && git remote add origin git@github.com:${config.organisation}/${config.project}.git && git add -A && git commit -m "Initial Commit" && git push origin master:master`, { cwd: __dirname }))
+    .then(callback())
+
   })
 
 
@@ -252,7 +288,7 @@ module.exports = (shipit) => {
   //   Provision remote server
   // --------------------------------------------------------------------------
 
-  shipit.blTask('provision', () => {
+  shipit.blTask('init:provision', () => {
     return shipit.remote(`mysql -u${shipit.config.db.remote.username} -p${shipit.config.db.remote.password} -e "CREATE DATABASE IF NOT EXISTS ${shipit.config.db.remote.database}"`)
   })
 

@@ -30,16 +30,9 @@ If required make mysqldump available to your shell (run `which mysqldump` to tes
 
 ### Secrets
 
-Copy a new secrets.json from the example file, fill in the generic details and staging and production server details
+Copy a new secrets.json from the example file, fill in the github_token, generic details and staging and production server details
 
-`mv secrets.json.example secrets.json`
-
-### Starting the server
-
-In your project root:
-
-* Clone the main project into the `public` directory
-* Run `vagrant up`
+`cp secrets.json.example secrets.json`
 
 ### Installing dependencies
 
@@ -48,6 +41,22 @@ Dependencies are handled with `composer` and `npm`
 * `composer install`
 * `npm install`
 
+
+### Initialising a project
+
+A task called init has been created to automate the start of a project. It should only be run once per project. Features include:
+
+* Creating a remote repo
+* Cloning the starter theme
+* Making the first commit
+* Pushing the first commit to the remote repo
+
+Run `shipit development init` to start setting up a project then follow the prompts
+
+### Starting the server
+
+If using Vagrant:
+* Run `vagrant up`
 
 ## Basic Vagrant Commands
 
@@ -73,7 +82,7 @@ vagrant ssh
 
 ## Database Access
 
-- Hostname: localhost or 127.0.0.1
+- Hostname: scotchbox
 - Username: root
 - Password: root
 - Database: scotchbox
