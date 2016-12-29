@@ -79,9 +79,8 @@ module.exports = (shipit) => {
       },
 
       shared: {
-
+        'triggerEvent': 'updated',
         dirs: [
-          'assets',
           {
             path:      'assets',
             overwrite: true,
