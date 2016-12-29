@@ -25,7 +25,7 @@ module.exports = (shipit) => {
       inquirer = require('inquirer'),
       replaceInFile = require('replace-in-file'),
       GitHub = require('github-api'),
-      Promise = require("bluebird")
+      Promise = require('bluebird')
 
 
   // --------------------------------------------------------------------------
@@ -144,6 +144,7 @@ module.exports = (shipit) => {
 
   shipit.on('init:confirmed', () => {
     shipit.start('init:replace')
+    shipit.start('init:salts')
     shipit.start('init:repository')
   })
 
@@ -280,6 +281,45 @@ module.exports = (shipit) => {
     .then(shipit.local(`rm -rf .git && git init && git remote add origin git@github.com:${config.organisation}/${config.project}.git && git add -A && git commit -m "Initial Commit" && git push origin master:master`, { cwd: __dirname }))
     .then(callback())
 
+  })
+
+
+  // --------------------------------------------------------------------------
+  //   Salts
+  // --------------------------------------------------------------------------
+
+  shipit.blTask('init:salts', (callback) => {
+
+    var path = require('path');
+    var crypto = require('crypto');
+    var replace = require('replace');
+
+    chalk.bold('Generating Salts');
+
+    var pwd = process.env.PWD;
+
+    var salt = () => crypto.randomBytes(30).toString('hex');
+
+    [
+      'AUTH_KEY',
+      'SECURE_AUTH_KEY',
+      'LOGGED_IN_KEY',
+      'NONCE_KEY',
+      'AUTH_SALT',
+      'SECURE_AUTH_SALT',
+      'LOGGED_IN_SALT',
+      'NONCE_SALT',
+    ].map(define => {
+      replace({
+        regex: /put your unique phrase here/,
+        replacement: salt(),
+        paths: [path.join(pwd, 'wp-config.php')],
+        recursive: false,
+        silent: true
+      });
+    });
+
+    callback && callback();
   })
 
 

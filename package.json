@@ -7,9 +7,11 @@
     "shipit-captain": "^0.4.4"
   },
   "devDependencies": {
+    "crypto": "0.0.3",
     "friendly-url": "^1.0.3",
     "github-api": "^2.3.0",
     "inquirer": "^1.2.3",
+    "replace": "^0.3.0",
     "replace-in-file": "^2.0.1",
     "shipit-assets": "^1.3.6",
     "shipit-cli": "^1.4.1",

@@ -85,14 +85,14 @@ define('DB_CHARSET', 'utf8');
 /** The Database Collate type. Don't change this if in doubt. */
 define('DB_COLLATE', '');
 
-define('AUTH_KEY',         'Un-j;-+Cv=MR{S{ :;gogdWz03kwik-?2*cw#HXR2#y#Fm0dj@^3K|?NQT2]B2aa');
-define('SECURE_AUTH_KEY',  '9`zdCM8^Zm||FZn3$m9z6(HS%_NVoOfa?+Bi%E$?}%2_Z]<942$+[.B{v8?N sE:');
-define('LOGGED_IN_KEY',    '-?8(ZG%SF$WA2^@OiP%*? Vome.<&+B>x6@E2~W8wZ`H-8d[<6|`c/k8cM|>#PjJ');
-define('NONCE_KEY',        'FFw7/;n#ehC/<=L-}X $oJKyg96xSSj_ZlwBlOY-88E$8(|2r9ZTZz0-%%~/XfIT');
-define('AUTH_SALT',        'M+v6k3oY-_+W~}=qp7mz?a8#-V%>7WZW4yNQ#(!l#B>F$*sRM:DnPi!;Q7T7jY/H');
-define('SECURE_AUTH_SALT', '|V[rAfuIKEe.!vmq-?41lY4l3pS4GG4|fK594d1pCh&|ij=0g|w5-Kuh0=hFC$#H');
-define('LOGGED_IN_SALT',   'R}6H)M=&zJayi>~6whaAB/@<^5+,)N-;+`4+=:v(SeuGM`9fj5,WM2+^}jPXj~:y');
-define('NONCE_SALT',       '!ve~15EKcU<#6XmE-2ss^ex^i*MN> m,=H(Qh7$Gt)l-JH2b+96~g;TwtFxS-D9n');
+define('AUTH_KEY',         'put your unique phrase here');
+define('SECURE_AUTH_KEY',  'put your unique phrase here');
+define('LOGGED_IN_KEY',    'put your unique phrase here');
+define('NONCE_KEY',        'put your unique phrase here');
+define('AUTH_SALT',        'put your unique phrase here');
+define('SECURE_AUTH_SALT', 'put your unique phrase here');
+define('LOGGED_IN_SALT',   'put your unique phrase here');
+define('NONCE_SALT',       'put your unique phrase here');
 
 
 /**
